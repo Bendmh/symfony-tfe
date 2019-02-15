@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activités{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5 col-md-5">
+                <h1>Liste des activités</h1>
+                <ul class="list-group">
+                {% for activite in activites %}
+
+                    <li class="list-group-item"><a class="text-primary p-3" href="{{ path('activity_questions', {'id': activite.id}) }}">{{ activite.name }}</a></li>
+
+                {% endfor %}
+
+                </ul>
+
+                <a href="{{ path('new_activity') }}" class="btn btn-primary mt-4">Créer une activité</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

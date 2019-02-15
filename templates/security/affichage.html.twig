@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello {% endblock %}
+
+{% block body %}
+
+    {% for user in users %}
+        <h2>{{ user.nom }}  {{ user.prenom }}</h2>
+    {% endfor %}
+{% endblock %}

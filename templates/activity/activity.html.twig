@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activité QCM{% endblock %}
+
+{% block body %}
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7 col-md-7">
+                <form action="{{ path('verification') }}" method="post">
+                    {#{% for activite in activites %}#}
+                    <h1>{{ activites.name }}</h1>
+                    {% for question in activites.questions %}
+                        <h2>{{ question.question }}</h2>
+                        <a href="{{ path('activity_questions_edit', {'id' : activites.id, 'slug' : question.id}) }}" class="btn btn-secondary">Modifier question/réponses</a>
+
+                        <div class="row p-3">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-check p-2">
+                                    <label class="form-check-label">
+                                        <input class="form-check-label" type="checkbox" name="{{ question.bonneReponse1 }}" value="{{ question.bonneReponse1 }}">{{ question.bonneReponse1 }}<br>
+                                    </label>
+                                </div>
+                                <div class="form-check p-2">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" name="{{ question.bonneReponse2 }}" value="{{ question.bonneReponse2 }}">{{ question.bonneReponse2 }}<br>
+                                    </label>
+                                </div>
+                                <div class="form-check p-2">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" name="{{ question.bonneReponse3 }}" value="{{ question.bonneReponse3 }}">{{ question.bonneReponse3 }}<br>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-check p-2">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" name="{{ question.mauvaiseReponse1 }}" value="{{ question.mauvaiseReponse1 }}">{{ question.mauvaiseReponse1 }}<br>
+                                    </label>
+                                </div>
+                                <div class="form-check p-2">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" name="{{ question.mauvaiseReponse2 }}" value="{{ question.mauvaiseReponse2 }}">{{ question.mauvaiseReponse2 }}<br>
+                                    </label>
+                                </div>
+                                <div class="form-check p-2">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" name="{{ question.mauvaiseReponse3 }}" value="{{ question.mauvaiseReponse3 }}">{{ question.mauvaiseReponse3 }}<br>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                </form>
+
+                <button type="submit" class="btn btn-success">Envoyer vos réponses</button>
+                <a href="{{ path('edit_activity', {'id' : activites.id}) }}" class="btn btn-primary">Modifier le nom</a>
+                <a href="{{ path('activity_questions_new', {'id' : activites.id}) }}" class="btn btn-info">Ajouter une question</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
