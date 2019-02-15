@@ -61,7 +61,8 @@ class ActivityController extends AbstractController
 
 
         return $this->render('activity/new.html.twig', [
-                'form_act' => $form->createView()
+                'form_act' => $form->createView(),
+                'activite' => $activity->getId()
         ]);
     }
 

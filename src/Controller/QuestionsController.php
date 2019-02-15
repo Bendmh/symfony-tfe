@@ -45,7 +45,7 @@ class QuestionsController extends AbstractController
             if(!$slug){
                 return $this->redirectToRoute('activity_questions_new', ['id' => $activities->getId()]);
             }else{
-                return $this->redirectToRoute('activity_questions_edit', ['id' => $activities->getId(), 'slug' => $question->getId()]);
+                return $this->redirectToRoute('activity_questions', ['id' => $activities->getId()]);
             }
 
 
@@ -53,7 +53,8 @@ class QuestionsController extends AbstractController
 
         return $this->render('questions/new.html.twig', [
             'form_quest' => $form->createView(),
-            'activity_id' => $activities->getId()
+            'activity_id' => $activities->getId(),
+            'question_id' => $question->getId()
         ]);
     }
 }

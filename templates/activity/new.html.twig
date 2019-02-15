@@ -20,7 +20,7 @@
                     'label' : 'Nom de l\'activité'
                 }) }}
 
-                <button type="submit" class="btn btn-success">Ajouter des questions</button>
+                <button type="submit" class="btn btn-success">{% if(activite) %}Changer le nom{% else %}Ajouter des questions{% endif %}</button>
 
                 {{ form_end(form_act) }}
             </div>
