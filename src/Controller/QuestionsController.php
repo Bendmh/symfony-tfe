@@ -9,6 +9,7 @@ use App\Repository\ActivityRepository;
 use App\Repository\QuestionsRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -36,7 +37,7 @@ class QuestionsController extends AbstractController
 
             $activities = $activityRepository->findOneby(['id' => $id]);
 
-            $question->setLink($activities);
+            $question->setActivity($activities);
 
             $manager->persist($question);
 
@@ -45,6 +46,7 @@ class QuestionsController extends AbstractController
             if(!$slug){
                 return $this->redirectToRoute('activity_questions_new', ['id' => $activities->getId()]);
             }else{
+                $this->addFlash('success', 'Bien modifié avec succès');
                 return $this->redirectToRoute('activity_questions', ['id' => $activities->getId()]);
             }
 
@@ -53,8 +55,23 @@ class QuestionsController extends AbstractController
 
         return $this->render('questions/new.html.twig', [
             'form_quest' => $form->createView(),
-            'activity_id' => $activities->getId(),
-            'question_id' => $question->getId()
+            'activity' => $activities,
+            'question' => $question
         ]);
+    }
+
+    /**
+     * @Route("activity/{id}/questions/{slug}/delete", name="activity_question_delete")
+     */
+    public function delete($id, $slug, QuestionsRepository $questionRepository, ObjectManager $manager){
+
+        $question = $questionRepository->findOneBy(['id' => $slug]);
+        dump($question);
+
+        $manager->remove($question);
+        $manager->flush();
+
+
+        return $this->redirectToRoute('activity_questions', ['id' => $id]);
     }
 }

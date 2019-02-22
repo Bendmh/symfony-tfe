@@ -6,10 +6,13 @@
 
 {% block body %}
 
+    <div class="jumbotron">
+        <h1>Création d'une activité</h1>
+    </div>
     <div class="container">
         <div class="row">
             <div class="col-lg-7 col-md-7">
-                <h1>Création d'une activité</h1>
+
 
                 {{ form_start(form_act) }}
 
@@ -20,12 +23,20 @@
                     'label' : 'Nom de l\'activité'
                 }) }}
 
-                <button type="submit" class="btn btn-success">{% if(activite) %}Changer le nom{% else %}Ajouter des questions{% endif %}</button>
+                {{ form_row(form_act.imageFile, {
+                    'attr' : {
+                        'placeholder' : "Ajouter une image (facultative)"
+                    },
+                    'label' : 'Image pour l\'activité'
+                }) }}
+
+                <button type="submit" class="btn btn-success">{% if(activity.id) %}Appliquer les modifications{% else %}Ajouter des questions{% endif %}</button>
 
                 {{ form_end(form_act) }}
             </div>
         </div>
     </div>
+
 
 
 

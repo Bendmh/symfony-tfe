@@ -5,9 +5,13 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ActivityRepository")
+ * @Vich\Uploadable
  */
 class Activity
 {
@@ -23,14 +27,38 @@ class Activity
      */
     private $name;
 
+
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Questions", mappedBy="link")
+     * @var string|null
+     * @ORM\column(type="string", length=255, nullable=true)
      */
-    private $questions;
+    private $fileName;
+
+    /**
+     * @Vich\UploadableField(mapping="activity_image", fileNameProperty="fileName")
+     * @var File|null
+     */
+    private $imageFile;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updated_at;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\UserActivity", mappedBy="activity_id")
+     */
+    private $userActivities;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Questions", mappedBy="activity")
+     */
+    private $question;
 
     public function __construct()
     {
-        $this->questions = new ArrayCollection();
+        $this->userActivities = new ArrayCollection();
+        $this->question = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -51,18 +79,128 @@ class Activity
     }
 
     /**
+     * @return null|string
+     */
+    public function getFileName(): ?string
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param null|string $fileName
+     * @return Questions
+     */
+    public function setFileName(?string $fileName): Activity
+    {
+        $this->fileName = $fileName;
+        return $this;
+    }
+
+    /**
+     * @return null|File
+     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param null|File $imageFile
+     * @return Questions
+     */
+    public function setImageFile(?File $imageFile): Activity
+    {
+        $this->imageFile = $imageFile;
+        if ($this->imageFile instanceof UploadedFile) {
+            $this->updated_at = new \DateTime('now');
+        }
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updated_at): self
+    {
+        $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addActivity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeActivity($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|UserActivity[]
+     */
+    public function getUserActivities(): Collection
+    {
+        return $this->userActivities;
+    }
+
+    public function addUserActivity(UserActivity $userActivity): self
+    {
+        if (!$this->userActivities->contains($userActivity)) {
+            $this->userActivities[] = $userActivity;
+            $userActivity->setActivityId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserActivity(UserActivity $userActivity): self
+    {
+        if ($this->userActivities->contains($userActivity)) {
+            $this->userActivities->removeElement($userActivity);
+            // set the owning side to null (unless already changed)
+            if ($userActivity->getActivityId() === $this) {
+                $userActivity->setActivityId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @return Collection|Questions[]
      */
-    public function getQuestions(): Collection
+    public function getQuestion(): Collection
     {
-        return $this->questions;
+        return $this->question;
     }
 
     public function addQuestion(Questions $question): self
     {
-        if (!$this->questions->contains($question)) {
-            $this->questions[] = $question;
-            $question->setLink($this);
+        if (!$this->question->contains($question)) {
+            $this->question[] = $question;
+            $question->setActivity($this);
         }
 
         return $this;
@@ -70,11 +208,11 @@ class Activity
 
     public function removeQuestion(Questions $question): self
     {
-        if ($this->questions->contains($question)) {
-            $this->questions->removeElement($question);
+        if ($this->question->contains($question)) {
+            $this->question->removeElement($question);
             // set the owning side to null (unless already changed)
-            if ($question->getLink() === $this) {
-                $question->setLink(null);
+            if ($question->getActivity() === $this) {
+                $question->setActivity(null);
             }
         }
 

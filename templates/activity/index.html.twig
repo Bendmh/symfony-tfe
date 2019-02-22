@@ -4,21 +4,31 @@
 
 {% block body %}
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-5 col-md-5">
-                <h1>Liste des activités</h1>
-                <ul class="list-group">
-                {% for activite in activites %}
+    <div class="jumbotron flex">
+        <h1 class="d-inline">Liste des activités</h1>
+        <a href="{{ path('new_activity') }}" class="btn btn-primary pull-right">Créer une activité</a>
+    </div>
 
-                    <li class="list-group-item"><a class="text-primary p-3" href="{{ path('activity_questions', {'id': activite.id}) }}">{{ activite.name }}</a></li>
+    <div class="m-3">
+        <div class="row flex">
 
-                {% endfor %}
-
-                </ul>
-
-                <a href="{{ path('new_activity') }}" class="btn btn-primary mt-4">Créer une activité</a>
-            </div>
+            {% for activite in activites %}
+                <div class="col-xs-4 col-lg-4 col-md-4 mb-3" >
+                        <div class="card">
+                            {% if activite.fileName %}
+                                <img class="card-img-top" src="{{ vich_uploader_asset(activite, 'imageFile') }}" alt="Card image cap" style="width: 100%; height: auto">
+                            {% else %}
+                                <img class="card-img-top mt-4" src="/images/activity/activity.png" alt="Card image cap" style="width: 100%; height: auto">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ activite.name }}</h5>
+                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <a href="{{ path('activity_questions', {'id': activite.id}) }}" class="btn btn-primary">Appliquer</a>
+                                <a href="{{ path('activity_delete', {'id': activite.id}) }}" class="btn btn-danger">Supprimer</a>
+                            </div>
+                        </div>
+                </div>
+            {% endfor %}
         </div>
     </div>
 

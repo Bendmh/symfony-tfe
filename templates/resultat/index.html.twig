@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Resultats{% endblock %}
+
+{% block body %}
+    <div class="jumbotron">
+        <h1>Résultats de vos étudiants</h1>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-lg-7 col-md-7">
+                <table>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Activité</th>
+                        <th>Point</th>
+                    </tr>
+                {% for result in user_activity %}
+                    <tr>
+                        <td>{{ result.userId.nom }}</td>
+                        <td>{{ result.userId.prenom }}</td>
+                        <td>{{ result.activityId.name }}</td>
+                        <td>{{ result.point }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

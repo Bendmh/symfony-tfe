@@ -3,5 +3,9 @@
 {% block title %}Hello{% endblock %}
 
 {% block body %}
-    <h1>Tu as obtenu 6/10</h1>
+    <h1>Tu as obtenu {{ point }} sur {{ total }}</h1>
+
+    {% if point < total/2 %}
+        <p>N'hésitez pas à la recommencer <a href="{{ path('activity_questions', {'id' : id}) }}">Clique ici</a></p>
+    {% endif %}
 {% endblock %}

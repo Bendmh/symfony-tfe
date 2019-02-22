@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\QuestionsRepository")
+ * @Vich\Uploadable
  */
 class Questions
 {
@@ -16,7 +19,19 @@ class Questions
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    public $id;
+    private $id;
+
+    /**
+     * @var string|null
+     * @ORM\column(type="string", length=255, nullable=true)
+     */
+    private $fileName;
+
+    /**
+     * @Vich\UploadableField(mapping="questions_image", fileNameProperty="fileName")
+     * @var File|null
+     */
+    private $imageFile;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -29,12 +44,12 @@ class Questions
     private $bonneReponse1;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $bonneReponse2;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $bonneReponse3;
 
@@ -44,20 +59,29 @@ class Questions
     private $mauvaiseReponse1;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $mauvaiseReponse2;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $mauvaiseReponse3;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Activity", inversedBy="questions")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private $link;
+    private $updated_at;
+
+    /**
+     * @ORM\Column(type="string", length=5)
+     */
+    private $points;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Activity", inversedBy="question")
+     */
+    private $activity;
 
     public function getId(): ?int
     {
@@ -72,18 +96,6 @@ class Questions
     public function setQuestion(string $question): self
     {
         $this->question = $question;
-
-        return $this;
-    }
-
-    public function getLink(): ?Activity
-    {
-        return $this->link;
-    }
-
-    public function setLink(?Activity $link): self
-    {
-        $this->link = $link;
 
         return $this;
     }
@@ -178,6 +190,81 @@ class Questions
     public function setMauvaiseReponse3($mauvaiseReponse3): void
     {
         $this->mauvaiseReponse3 = $mauvaiseReponse3;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFileName(): ?string
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param null|string $fileName
+     * @return Questions
+     */
+    public function setFileName(?string $fileName): Questions
+    {
+        $this->fileName = $fileName;
+        return $this;
+    }
+
+    /**
+     * @return null|File
+     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param null|File $imageFile
+     * @return Questions
+     */
+    public function setImageFile(?File $imageFile): Questions
+    {
+        $this->imageFile = $imageFile;
+        if ($this->imageFile instanceof UploadedFile) {
+            $this->updated_at = new \DateTime('now');
+        }
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updated_at): self
+    {
+        $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getPoints(): ?string
+    {
+        return $this->points;
+    }
+
+    public function setPoints(string $points): self
+    {
+        $this->points = $points;
+
+        return $this;
+    }
+
+    public function getActivity(): ?Activity
+    {
+        return $this->activity;
+    }
+
+    public function setActivity(?Activity $activity): self
+    {
+        $this->activity = $activity;
+
+        return $this;
     }
 
 }

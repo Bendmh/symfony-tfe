@@ -24,19 +24,15 @@ class Classes
     private $nom;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="classes")
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="classes")
      */
-    private $users;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="appartenance")
-     */
-    private $appartenance;
+    private $classe_user;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->appartenance = new ArrayCollection();
+        $this->classe_user = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -59,60 +55,24 @@ class Classes
     /**
      * @return Collection|User[]
      */
-    public function getUsers(): Collection
+    public function getClasseUser(): Collection
     {
-        return $this->users;
+        return $this->classe_user;
     }
 
-    public function addUser(User $user): self
+    public function addClasseUser(User $classeUser): self
     {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->setClasses($this);
+        if (!$this->classe_user->contains($classeUser)) {
+            $this->classe_user[] = $classeUser;
         }
 
         return $this;
     }
 
-    public function removeUser(User $user): self
+    public function removeClasseUser(User $classeUser): self
     {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-            // set the owning side to null (unless already changed)
-            if ($user->getClasses() === $this) {
-                $user->setClasses(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|User[]
-     */
-    public function getAppartenance(): Collection
-    {
-        return $this->appartenance;
-    }
-
-    public function addAppartenance(User $appartenance): self
-    {
-        if (!$this->appartenance->contains($appartenance)) {
-            $this->appartenance[] = $appartenance;
-            $appartenance->setAppartenance($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAppartenance(User $appartenance): self
-    {
-        if ($this->appartenance->contains($appartenance)) {
-            $this->appartenance->removeElement($appartenance);
-            // set the owning side to null (unless already changed)
-            if ($appartenance->getAppartenance() === $this) {
-                $appartenance->setAppartenance(null);
-            }
+        if ($this->classe_user->contains($classeUser)) {
+            $this->classe_user->removeElement($classeUser);
         }
 
         return $this;
