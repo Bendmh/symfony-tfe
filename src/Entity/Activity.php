@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
@@ -24,6 +25,7 @@ class Activity
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
      */
     private $name;
 
@@ -46,12 +48,12 @@ class Activity
     private $updated_at;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\UserActivity", mappedBy="activity_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\UserActivity", mappedBy="activity_id", cascade={"persist", "remove"})
      */
     private $userActivities;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Questions", mappedBy="activity")
+     * @ORM\OneToMany(targetEntity="App\Entity\Questions", mappedBy="activity", cascade={"persist", "remove"})
      */
     private $question;
 

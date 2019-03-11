@@ -2,26 +2,31 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Classes;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserFixtures extends Fixture
 {
+
+    private $encoder;
+
+    public function __construct(UserPasswordEncoderInterface $encoder)
+    {
+        $this->encoder = $encoder;
+    }
+
     public function load(ObjectManager $manager)
     {
+        $user = new User();
 
-        /*$tab = ['1a', '2a'];
+        $user->setNom('');
+        $user->setPrenom('');
+        $user->setPseudo('');
+        $user->setTitre('ROLE_SUPER_ADMIN');
+        $user->setPassword($this->encoder->encodePassword($user, ''));
 
-        for($i=0; $i < 2; $i++){
-            $classes = new Classes();
-
-            $classes->setNom($tab[$i]);
-
-            $manager->persist($classes);
-
-            $manager->flush();
-        }*/
-
+        $manager->flush();
     }
 }

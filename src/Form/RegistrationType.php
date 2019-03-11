@@ -23,8 +23,8 @@ class RegistrationType extends AbstractType
             ->add('confirm_password', PasswordType::class)
             ->add('titre', ChoiceType::class,[
                 'choices' => [
-                    'Professeur' => 'professeur',
-                    'Elève' => 'eleve'
+                    'Professeur' => 'ROLE_PROFESSEUR',
+                    'Elève' => 'ROLE_ELEVE'
                 ]
             ])
             ->add('classes', EntityType::class, [
@@ -34,7 +34,8 @@ class RegistrationType extends AbstractType
                 'expanded' => false,
                 'mapped' => true,
                 'by_reference' =>false,
-                'multiple' => true
+                'multiple' => true,
+                'attr' => ['id' => 'test']
             ])
         ;
     }

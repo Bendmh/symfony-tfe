@@ -16,11 +16,13 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-lg-7 col-md-7">
-                <form action="{{ path('verification', {'id' : activities.id}) }}" method="post">
+                <form action="{{ path('verification_qcm', {'id' : activities.id}) }}" method="post">
                     {% dump(activities.question) %}
                     {% for question in activities.question %}
-                        <a href="{{ path('activity_questions_edit', {'id' : activities.id, 'slug' : question.id}) }}" class="btn btn-secondary">Modifier</a>
-                        <a href="{{ path('activity_question_delete', {'id' : activities.id, 'slug' : question.id}) }}" class="btn btn-danger">Supprimer</a>
+                        {% if is_granted('ROLE_PROFESSEUR') %}
+                            <a href="{{ path('activity_questions_edit', {'id' : activities.id, 'slug' : question.id}) }}" class="btn btn-secondary">Modifier</a>
+                            <a href="{{ path('activity_question_delete', {'id' : activities.id, 'slug' : question.id}) }}" class="btn btn-danger">Supprimer</a>
+                        {% endif %}
                         <h2>{{ question.question }}</h2>
                         {% if question.fileName %}
                             <img src="{{ vich_uploader_asset(question, 'imageFile') }}" alt="card-question" style="width: 80%; height: auto;">
@@ -85,9 +87,9 @@
 
                 </form>
 
-                <a href="{{ path('edit_activity', {'id' : activities.id}) }}" class="btn btn-primary m-1">Modifier l'activité</a>
-                <a href="{{ path('activity_questions_new', {'id' : activities.id}) }}" class="btn btn-info m-1">Ajouter une question</a>
-
+                {% if is_granted('ROLE_PROFESSEUR') %}
+                    <a href="{{ path('activity_questions_new', {'id' : activities.id}) }}" class="btn btn-info m-1">Ajouter une question</a>
+                {% endif %}
             </div>
         </div>
     </div>

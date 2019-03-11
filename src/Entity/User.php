@@ -162,7 +162,8 @@ class User implements UserInterface
     }
     public function getRoles()
     {
-        return ['ROLE_USER'];
+        $titre = $this->titre;
+        return [$titre];
     }
 
     public function getUsername()

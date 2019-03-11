@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\Activity;
 use App\Entity\GoodResponses;
 use App\Entity\Questions;
+use App\Entity\Reponses;
 use App\Entity\UserActivity;
 use App\Form\ActivityType;
 use App\Form\GoodAnswerType;
@@ -76,23 +77,34 @@ class ActivityController extends AbstractController
     /**
      * @Route("/activity/{id}/qcm", name="activity_questions")
      */
-    public function activity($id, ActivityRepository $activityRepository, ObjectManager $manager){
+    public function activity($id, ActivityRepository $activityRepository, ObjectManager $manager, UserActivityRepository $userActivityRepository){
 
-        $user_activity = new UserActivity();
+        if(!$this->getUser()){
+            $this->addFlash('error', 'Il faut se connecter pour faire l\'activité');
+
+            return $this->redirectToRoute('activity');
+        }
+
+        //$user_activity = new UserActivity();
+
         $activities = $activityRepository->findOneby(['id' => $id]);
 
         $user = $this->getUser();
+
+        $user_activity = $userActivityRepository->findOneby(['user_id' => $user, 'activity_id' => $activities->getId()]);
+
+        if(!$user_activity){
+            $user_activity = new UserActivity();
+        }
+
         $user_activity->setUserId($user);
         $user_activity->setActivityId($activities);
 
         $manager->persist($user_activity);
-        dump($user_activity);
         $manager->flush();
 
 
         $tab=['question.bonneReponse1', 'question.bonneReponse2', 'question.bonneReponse3', 'question.mauvaiseReponse1', 'question.mauvaiseReponse2', 'question.mauvaiseReponse3'];
-
-        shuffle($tab);
 
         return $this->render('activity/activity.html.twig', [
             'activities' => $activities,
@@ -101,14 +113,16 @@ class ActivityController extends AbstractController
     }
 
     /**
-     * @Route("{id}/verification", name="verification")
+     * @Route("{id}/verification/qcm", name="verification_qcm")
      */
-    public function verification($id, Request $request, QuestionsRepository $questionRepository){
+    public function verification($id, Request $request, QuestionsRepository $questionRepository, UserActivityRepository $userActivityRepository, ObjectManager $manager){
 
         $point = 0;
         $total = 0;
         $questionPrecedente = '';
         $tab = $request->request->all();
+
+        $user_activity = $userActivityRepository->findOneby(['user_id' => $this->getUser(), 'activity_id' => $id]);
 
         while ($reponse = current($tab)){
 
@@ -133,6 +147,12 @@ class ActivityController extends AbstractController
             next($tab);
             $questionPrecedente = $questionIS;
         }
+
+        $user_activity->setPoint($point);
+
+        $manager->persist($user_activity);
+        $manager->flush();
+
         return $this->render('activity/retour.html.twig', [
             'point' => $point,
             'total' => $total,

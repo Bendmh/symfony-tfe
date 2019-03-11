@@ -33,6 +33,8 @@ class QuestionsController extends AbstractController
 
         $form->handleRequest($request);
 
+        dump($request->request->all());
+
         if($form->isSubmitted() && $form->isValid()){
 
             $activities = $activityRepository->findOneby(['id' => $id]);
@@ -66,7 +68,6 @@ class QuestionsController extends AbstractController
     public function delete($id, $slug, QuestionsRepository $questionRepository, ObjectManager $manager){
 
         $question = $questionRepository->findOneBy(['id' => $slug]);
-        dump($question);
 
         $manager->remove($question);
         $manager->flush();
