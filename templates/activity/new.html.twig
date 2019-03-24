@@ -30,6 +30,12 @@
                     'label' : 'Image pour l\'activité'
                 }) }}
 
+                {{ form_row(form_act.visible, {
+                    'attr' : {
+                        'placeholder' : "Activité visible dans la liste"
+                    }
+                }) }}
+
                 <button type="submit" class="btn btn-success">{% if(activity.id) %}Appliquer les modifications{% else %}Ajouter des questions{% endif %}</button>
 
                 {{ form_end(form_act) }}

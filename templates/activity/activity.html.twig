@@ -17,7 +17,6 @@
         <div class="row">
             <div class="col-xs-12 col-lg-7 col-md-7">
                 <form action="{{ path('verification_qcm', {'id' : activities.id}) }}" method="post">
-                    {% dump(activities.question) %}
                     {% for question in activities.question %}
                         {% if is_granted('ROLE_PROFESSEUR') %}
                             <a href="{{ path('activity_questions_edit', {'id' : activities.id, 'slug' : question.id}) }}" class="btn btn-secondary">Modifier</a>

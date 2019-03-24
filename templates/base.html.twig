@@ -15,8 +15,6 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-
-
         <nav class="navbar navbar-expand-lg navbar-dark " style="background-color: #563d7c;">
             <a class="navbar-brand" href="{{ path('index') }}">ActiviCool</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,9 +26,22 @@
                     <li class="nav-item {% if current_menu is defined and current_menu == 'home' %} active {% endif %}">
                         <a class="nav-link" href="{{ path('index') }}">Home <span class="sr-only">(current)</span></a>
                     </li>
-                    <li class="nav-item {% if current_menu is defined and current_menu == 'activity' %} active {% endif %}">
-                        <a class="nav-link" href="{{ path('activity') }}">Activités</a>
-                    </li>
+                    {% if is_granted('ROLE_PROFESSEUR') %}
+                        <li class="nav-item {% if current_menu is defined and current_menu == 'activity' %} active {% endif %} dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Activités
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ path('activity') }}"> Liste des activités</a>
+                                <a class="dropdown-item" href="#">Mes activités</a>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li class="nav-item {% if current_menu is defined and current_menu == 'activity' %} active {% endif %}">
+                            <a class="nav-link" href="{{ path('activity') }}">Activités</a>
+                        </li>
+                    {% endif %}
+
                     {% if app.user %}
                     <li class="nav-item {% if current_menu is defined and current_menu == 'perso' %} active {% endif %}">
                         <a class="nav-link" href="{{ path('perso') }}">Ma Page</a>
