@@ -2,24 +2,21 @@
 
 namespace App\Form;
 
-use App\Entity\Activity;
+use App\Entity\CSV;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ActivityType extends AbstractType
+class CSVType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('name')
-            ->add('imageFile', FileType::class, [
-                'required' => false
-            ])
-            ->add('visible', CheckboxType::class, [
-                'required' => false
+            ->add('fileCSV', FileType::class, [
+                'label' => 'Fichier CSV !',
+                'required' => true
             ])
         ;
     }
@@ -27,7 +24,7 @@ class ActivityType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Activity::class,
+            'data_class' => CSV::class,
         ]);
     }
 }

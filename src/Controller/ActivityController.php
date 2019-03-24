@@ -25,15 +25,17 @@ class ActivityController extends AbstractController
     /**
      * @Route("/activity", name="activity")
      */
-    public function index(ActivityRepository $activityRepository)
+    public function showActivities(ActivityRepository $activityRepository)
     {
-        $activities = $activityRepository->findAll();
+        $activities = $activityRepository->findBy(['visible' => true]);
 
         return $this->render('activity/index.html.twig', [
             'activites' => $activities,
             'current_menu' => 'activity'
         ]);
     }
+
+    //public function
 
     /**
      * @Route("/activity/new", name="new_activity")
@@ -51,6 +53,8 @@ class ActivityController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid()){
 
+            $activity->setCreatedBy($this->getUser());
+
             $manager->persist($activity);
 
             $manager->flush();
@@ -58,7 +62,7 @@ class ActivityController extends AbstractController
             if(!$id){
                 return $this->redirectToRoute('activity_questions_new', ['id' => $activity->getId()]);
             }else {
-                $this->addFlash('success', 'Bien modifié avec succès');
+                $this->addFlash('success', 'Activité modifiée avec succès');
                 return $this->redirectToRoute('activity_questions', ['id' => $activity->getId()]);
             }
 
@@ -142,7 +146,7 @@ class ActivityController extends AbstractController
             if(in_array($reponse, [$question->getBonneReponse1(), $question->getBonneReponse2(), $question->getBonneReponse3()])){
                 $point++;
             }else {
-                $point = $point-0.25;
+                $point = $point-0.2;
             }
             next($tab);
             $questionPrecedente = $questionIS;
@@ -168,7 +172,6 @@ class ActivityController extends AbstractController
     public function delete($id, ActivityRepository $activityRepository, ObjectManager $manager){
 
         $activities = $activityRepository->findOneby(['id' => $id]);
-
         $manager->remove($activities);
         $manager->flush();
         return $this->redirectToRoute('activity');

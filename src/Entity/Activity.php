@@ -8,11 +8,16 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ActivityRepository")
  * @Vich\Uploadable
+ * @UniqueEntity(
+ *     fields = {"name"},
+ *     message = "Ce nom d'activité existe déjà !"
+ * )
  */
 class Activity
 {
@@ -56,6 +61,17 @@ class Activity
      * @ORM\OneToMany(targetEntity="App\Entity\Questions", mappedBy="activity", cascade={"persist", "remove"})
      */
     private $question;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="activity_creator")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $created_by;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $visible;
 
     public function __construct()
     {
@@ -132,34 +148,6 @@ class Activity
     }
 
     /**
-     * @return Collection|User[]
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function addUser(User $user): self
-    {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->addActivity($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-            $user->removeActivity($this);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection|UserActivity[]
      */
     public function getUserActivities(): Collection
@@ -217,6 +205,30 @@ class Activity
                 $question->setActivity(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->created_by;
+    }
+
+    public function setCreatedBy(?User $created_by): self
+    {
+        $this->created_by = $created_by;
+
+        return $this;
+    }
+
+    public function getVisible(): ?bool
+    {
+        return $this->visible;
+    }
+
+    public function setVisible(bool $visible): self
+    {
+        $this->visible = $visible;
 
         return $this;
     }

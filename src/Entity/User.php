@@ -85,12 +85,18 @@ class User implements UserInterface
      */
     private $activity_id;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="created_by", orphanRemoval=true)
+     */
+    private $activity_creator;
+
 
     public function __construct()
     {
         $this->classes = new ArrayCollection();
         $this->activity = new ArrayCollection();
         $this->activity_id = new ArrayCollection();
+        $this->activity_creator = new ArrayCollection();
     }
 
     /**
@@ -262,6 +268,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($activityId->getUserId() === $this) {
                 $activityId->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Activity[]
+     */
+    public function getActivityCreator(): Collection
+    {
+        return $this->activity_creator;
+    }
+
+    public function addActivityCreator(Activity $activityCreator): self
+    {
+        if (!$this->activity_creator->contains($activityCreator)) {
+            $this->activity_creator[] = $activityCreator;
+            $activityCreator->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivityCreator(Activity $activityCreator): self
+    {
+        if ($this->activity_creator->contains($activityCreator)) {
+            $this->activity_creator->removeElement($activityCreator);
+            // set the owning side to null (unless already changed)
+            if ($activityCreator->getCreatedBy() === $this) {
+                $activityCreator->setCreatedBy(null);
             }
         }
 

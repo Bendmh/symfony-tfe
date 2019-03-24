@@ -16,7 +16,6 @@ class ReponsesType extends AbstractType
         $builder
             ->add('reponse1', ChoiceType::class, [
                 'choices' => [
-                    new Questions(),
                     new Questions()
                 ],
                 'choice_label' => function($question){

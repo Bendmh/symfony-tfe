@@ -33,8 +33,6 @@ class QuestionsController extends AbstractController
 
         $form->handleRequest($request);
 
-        dump($request->request->all());
-
         if($form->isSubmitted() && $form->isValid()){
 
             $activities = $activityRepository->findOneby(['id' => $id]);
@@ -48,7 +46,7 @@ class QuestionsController extends AbstractController
             if(!$slug){
                 return $this->redirectToRoute('activity_questions_new', ['id' => $activities->getId()]);
             }else{
-                $this->addFlash('success', 'Bien modifié avec succès');
+                $this->addFlash('success', 'Questions modifiées avec succès');
                 return $this->redirectToRoute('activity_questions', ['id' => $activities->getId()]);
             }
 
