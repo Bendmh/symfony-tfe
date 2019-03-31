@@ -5,14 +5,18 @@ namespace App\Controller;
 use App\Entity\Activity;
 use App\Entity\CSV;
 use App\Entity\Questions;
+use App\Entity\QuestionsGroupes;
+use App\Entity\QuestionsReponses;
 use App\Entity\Reponses;
 use App\Form\CSVselectType;
 use App\Form\CSVType;
+use App\Form\QuestionsGroupesType;
 use App\Form\RegistrationType;
 use App\Form\ReponsesType;
 use App\Repository\ActivityRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Persistence\ObjectManager;
+use League\Csv\Writer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -60,16 +64,28 @@ class IndexController extends AbstractController
      * @param Reponses $reponses
      * @Route("/test", name="test")
      * @throws \League\Csv\Exception
+     * @throws \TypeError
      */
     public function test(ObjectManager $manager, ActivityRepository $repository, Request $request){
 
-        $reponses = new Reponses();
+       /* $records = [
+            [1, 2, 3],
+            ['foo', 'bar', 'baz'],
+            ['john', 'doe', 'john.doe@example.com'],
+        ];
 
-        $form = $this->createForm(ReponsesType::class, $reponses);
+        $projectDir = $this->getParameter('kernel.project_dir');
+        $csvPath = $projectDir . "\public\csv\\test.csv";
+        $writer = Writer::createFromPath($csvPath, 'w+');
+        $writer->insertAll($records);*/
+
+
+       /* $reponses = new Reponses();
+
+        $form = $this->createForm(ReponsesType::class, $reponses);*/
 
         return $this->render('index/test.html.twig', [
-            'current_menu' => 'perso',
-            'form' => $form->createView()
+            'current_menu' => 'perso'
         ]);
 
     }

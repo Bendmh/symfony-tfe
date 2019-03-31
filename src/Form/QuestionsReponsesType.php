@@ -2,20 +2,19 @@
 
 namespace App\Form;
 
-use App\Entity\CSV;
+use App\Entity\QuestionsReponses;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CSVType extends AbstractType
+class QuestionsReponsesType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name')
-            ->add('fileCSV', FileType::class, [
-                'required' => true
+            ->add('name', TextType::class, [
+                'label' => 'Réponse liée à ce groupe'
             ])
         ;
     }
@@ -23,7 +22,7 @@ class CSVType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => CSV::class,
+            'data_class' => QuestionsReponses::class,
         ]);
     }
 }

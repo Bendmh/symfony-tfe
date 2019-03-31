@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\Activity;
 use App\Entity\CSV;
 use App\Entity\Questions;
+use App\Form\CSVExportType;
 use App\Form\CSVselectType;
 use App\Form\CSVType;
 use App\Repository\ActivityRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use League\Csv\Reader;
+use League\Csv\Writer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,15 +21,13 @@ class CSVController extends AbstractController
     /**
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \League\Csv\Exception
-     * @Route("/csv", name="import_csv")
+     * @Route("/import/csv", name="import_csv")
      */
     public function csvImport(Request $request, ObjectManager $manager){
 
-        //$step = 1;
         $csv = new CSV();
         $form = $this->createForm(CSVType::class, $csv);
         $form->handleRequest($request);
-        $header = '';
 
         if($form->isSubmitted() && $form->isValid()){
             $manager->persist($csv);
@@ -36,10 +36,9 @@ class CSVController extends AbstractController
             return $this->redirectToRoute('import_csv_id', ['id' => $csv->getId()]);
         }
 
-        return $this->render('index/csv.html.twig', [
-            'header' => $header,
+        return $this->render('csv/step1.html.twig', [
             'form_csv' => $form->createView(),
-            //'step' => $step
+            'current_menu' => 'csv'
         ]);
     }
 
@@ -51,7 +50,7 @@ class CSVController extends AbstractController
      * @param ObjectManager $manager
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \League\Csv\Exception
-     * @Route("/csv/{id}", name="import_csv_id")
+     * @Route("/import/csv/{id}", name="import_csv_id")
      */
     public function csvImportId($id = null, CSV $csv, Request $request, ObjectManager $manager){
 
@@ -88,8 +87,6 @@ class CSVController extends AbstractController
         $form = $this->createForm(CSVselectType::class, $csv);
         $form->handleRequest($request);
 
-        //$step = 2;
-
         if($form->isSubmitted() && $form->isValid()){
 
             $manager->persist($csv);
@@ -98,17 +95,17 @@ class CSVController extends AbstractController
             return $this->redirectToRoute('csv_final', ['id' => $id]);
         }
 
-        return $this->render('index/csv.html.twig', [
+        return $this->render('csv/step2.html.twig', [
             'form_csv' => $form->createView(),
-            //'step' => $step
+            'current_menu' => 'csv'
         ]);
     }
 
     /**
-     * @Route("/csv/{id}/final", name="csv_final")
+     * @Route("/import/csv/{id}/final", name="csv_final")
      * @throws \League\Csv\Exception
      */
-    public function test($id = null, CSV $csv, ObjectManager $manager, ActivityRepository $repository, Request $request){
+    public function csvFinalStep($id = null, CSV $csv, ObjectManager $manager, ActivityRepository $repository, Request $request){
 
         $projectDir = $this->getParameter('kernel.project_dir');
         $csvPath = $projectDir . "\public\csv\\" . $csv->getFile();
@@ -123,7 +120,11 @@ class CSVController extends AbstractController
             if(!$activity){
                 $activity = new Activity();
                 $activity->setName($record[$csv->getColumn1()]);
+                $activity->setType($csv->getType());
             }
+            $activity->setCreatedBy($this->getUser());
+            $activity->setVisible(true);
+
             $question = new Questions();
             if($csv->getColumn2()){
                 $question->setQuestion($record[$csv->getColumn2()]);
@@ -152,5 +153,59 @@ class CSVController extends AbstractController
         }
 
         return $this->redirectToRoute('activity');
+    }
+
+    /**
+     * @param Request $request
+     * @param ObjectManager $manager
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @Route("/export/csv", name="export_csv")
+     * @throws \TypeError
+     * @throws \League\Csv\Exception
+     */
+    public function exportActivityCsv(Request $request, ObjectManager $manager, ActivityRepository $activityRepository){
+
+        $csv = new CSV();
+        $form = $this->createForm(CSVExportType::class, $csv);
+        $form->handleRequest($request);
+
+        $tableauFinal[] = ['Activite', 'Question', 'Bonne Reponse 1', 'Bonne reponse 2', 'Bonne reponse 3',
+                        'Mauvaise reponse 1', 'Mauvaise reponse 2', 'Mauvaise reponse 3', 'Points'];
+
+        $activities = $activityRepository->findAll();
+        foreach ($activities as $activity ){
+            $questions = $activity->getQuestion();
+            foreach ($questions as $question){
+                $tableauFinal[] = [$question->getActivity()->getName(), $question->getQuestion(),
+                                    $question->getBonneReponse1(), $question->getBonneReponse2(),
+                                    $question->getBonneReponse3(), $question->getMauvaiseReponse1(),
+                                    $question->getMauvaiseReponse2(), $question->getMauvaiseReponse3(),
+                                    $question->getPoints()
+                    ];
+            }
+        }
+
+        if($form->isSubmitted() && $form->isValid()){
+
+            $name = $csv->getName();
+
+            $projectDir = $this->getParameter('kernel.project_dir');
+            $csvPath = $projectDir . "\public\csv\\" . $name .'.csv';
+            $writer = Writer::createFromPath($csvPath, 'w+');
+            $writer->setDelimiter(';');
+            $writer->insertAll($tableauFinal);
+
+            header('Content-Type: text/csv; charset=UTF-8');
+            header('Content-Description: File Transfer');
+            header('Content-Disposition: attachment; filename="'.$name.'csv"');
+            $reader = Reader::createFromPath($csvPath, 'r');
+            $reader->output($name.'.csv');
+            die();
+        }
+
+        return $this->render('csv/export.html.twig', [
+            'form_csv' => $form->createView(),
+            'current_menu' => 'csv'
+        ]);
     }
 }

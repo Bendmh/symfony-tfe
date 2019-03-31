@@ -98,6 +98,11 @@ class CSV
      */
     private $name;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\ActivityType", inversedBy="cSVs")
+     */
+    private $type;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -219,6 +224,18 @@ class CSV
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getType(): ?ActivityType
+    {
+        return $this->type;
+    }
+
+    public function setType(?ActivityType $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

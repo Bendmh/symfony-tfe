@@ -73,10 +73,22 @@ class Activity
      */
     private $visible;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\QuestionsGroupes", mappedBy="activity", cascade={"persist", "remove"})
+     */
+    private $questionsGroupes;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\ActivityType", inversedBy="activity")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $type;
+
     public function __construct()
     {
         $this->userActivities = new ArrayCollection();
         $this->question = new ArrayCollection();
+        $this->questionsGroupes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -229,6 +241,49 @@ class Activity
     public function setVisible(bool $visible): self
     {
         $this->visible = $visible;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|QuestionsGroupes[]
+     */
+    public function getQuestionsGroupes(): Collection
+    {
+        return $this->questionsGroupes;
+    }
+
+    public function addQuestionsGroupe(QuestionsGroupes $questionsGroupe): self
+    {
+        if (!$this->questionsGroupes->contains($questionsGroupe)) {
+            $this->questionsGroupes[] = $questionsGroupe;
+            $questionsGroupe->setActivity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestionsGroupe(QuestionsGroupes $questionsGroupe): self
+    {
+        if ($this->questionsGroupes->contains($questionsGroupe)) {
+            $this->questionsGroupes->removeElement($questionsGroupe);
+            // set the owning side to null (unless already changed)
+            if ($questionsGroupe->getActivity() === $this) {
+                $questionsGroupe->setActivity(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getType(): ?ActivityType
+    {
+        return $this->type;
+    }
+
+    public function setType(?ActivityType $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

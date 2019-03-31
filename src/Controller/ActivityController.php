@@ -4,13 +4,10 @@ namespace App\Controller;
 
 
 use App\Entity\Activity;
-use App\Entity\GoodResponses;
-use App\Entity\Questions;
-use App\Entity\Reponses;
+use App\Entity\ActivitySearch;
 use App\Entity\UserActivity;
+use App\Form\ActivitySearchType;
 use App\Form\ActivityType;
-use App\Form\GoodAnswerType;
-use App\Form\QuestionType;
 use App\Repository\ActivityRepository;
 use App\Repository\QuestionsRepository;
 use App\Repository\UserActivityRepository;
@@ -24,22 +21,49 @@ class ActivityController extends AbstractController
 {
     /**
      * @Route("/activity", name="activity")
+     * @param ActivityRepository $activityRepository
+     * @param Request $request
+     * @return Response
      */
-    public function showActivities(ActivityRepository $activityRepository)
+    public function showActivities(ActivityRepository $activityRepository, Request $request)
     {
-        $activities = $activityRepository->findBy(['visible' => true]);
+        $search = new ActivitySearch();
+        $form = $this->createForm(ActivitySearchType::class, $search);
+        $form->handleRequest($request);
+        $activities = $activityRepository->findActivitySearch($search);
 
         return $this->render('activity/index.html.twig', [
             'activites' => $activities,
-            'current_menu' => 'activity'
+            'current_menu' => 'activity',
+            'perso' => false,
+            'form_activity' => $form->createView()
         ]);
     }
 
-    //public function
+    /**
+     * @param ActivityRepository $activityRepository
+     * @return Response
+     * @Route("/activity/perso", name="activityPerso")
+     */
+    public function showTeacherActivities(ActivityRepository $activityRepository){
+
+        $activities = $activityRepository->findBy(['created_by' => $this->getUser()]);
+
+        return $this->render('activity/index.html.twig', [
+            'activites' => $activities,
+            'current_menu' => 'activity',
+            'perso' => true
+        ]);
+    }
 
     /**
      * @Route("/activity/new", name="new_activity")
      * @Route("/activity/{id}/edit", name="edit_activity")
+     * @param null $id
+     * @param Activity|null $activity
+     * @param Request $request
+     * @param ObjectManager $manager
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function create($id = null, Activity $activity = null, Request $request, ObjectManager $manager){
 
@@ -60,10 +84,10 @@ class ActivityController extends AbstractController
             $manager->flush();
 
             if(!$id){
-                return $this->redirectToRoute('activity_questions_new', ['id' => $activity->getId()]);
+                return $this->redirectToRoute('activity_'. $activity->getType()->getName() .'_new', ['id' => $activity->getId()]);
             }else {
                 $this->addFlash('success', 'Activité modifiée avec succès');
-                return $this->redirectToRoute('activity_questions', ['id' => $activity->getId()]);
+                return $this->redirectToRoute('activity_' . $activity->getType()->getName(), ['id' => $activity->getId()]);
             }
 
 
@@ -77,47 +101,14 @@ class ActivityController extends AbstractController
         ]);
     }
 
-
-    /**
-     * @Route("/activity/{id}/qcm", name="activity_questions")
-     */
-    public function activity($id, ActivityRepository $activityRepository, ObjectManager $manager, UserActivityRepository $userActivityRepository){
-
-        if(!$this->getUser()){
-            $this->addFlash('error', 'Il faut se connecter pour faire l\'activité');
-
-            return $this->redirectToRoute('activity');
-        }
-
-        //$user_activity = new UserActivity();
-
-        $activities = $activityRepository->findOneby(['id' => $id]);
-
-        $user = $this->getUser();
-
-        $user_activity = $userActivityRepository->findOneby(['user_id' => $user, 'activity_id' => $activities->getId()]);
-
-        if(!$user_activity){
-            $user_activity = new UserActivity();
-        }
-
-        $user_activity->setUserId($user);
-        $user_activity->setActivityId($activities);
-
-        $manager->persist($user_activity);
-        $manager->flush();
-
-
-        $tab=['question.bonneReponse1', 'question.bonneReponse2', 'question.bonneReponse3', 'question.mauvaiseReponse1', 'question.mauvaiseReponse2', 'question.mauvaiseReponse3'];
-
-        return $this->render('activity/activity.html.twig', [
-            'activities' => $activities,
-            'tab' => $tab
-        ]);
-    }
-
     /**
      * @Route("{id}/verification/qcm", name="verification_qcm")
+     * @param $id
+     * @param Request $request
+     * @param QuestionsRepository $questionRepository
+     * @param UserActivityRepository $userActivityRepository
+     * @param ObjectManager $manager
+     * @return Response
      */
     public function verification($id, Request $request, QuestionsRepository $questionRepository, UserActivityRepository $userActivityRepository, ObjectManager $manager){
 
@@ -153,6 +144,7 @@ class ActivityController extends AbstractController
         }
 
         $user_activity->setPoint($point);
+        $user_activity->setTotal($total);
 
         $manager->persist($user_activity);
         $manager->flush();
@@ -174,6 +166,6 @@ class ActivityController extends AbstractController
         $activities = $activityRepository->findOneby(['id' => $id]);
         $manager->remove($activities);
         $manager->flush();
-        return $this->redirectToRoute('activity');
+        return $this->redirectToRoute('activityPerso');
     }
 }

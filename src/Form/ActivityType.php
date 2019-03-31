@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Activity;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -20,6 +21,10 @@ class ActivityType extends AbstractType
             ])
             ->add('visible', CheckboxType::class, [
                 'required' => false
+            ])
+            ->add('type', EntityType::class, [
+                'class' => \App\Entity\ActivityType::class,
+                'choice_label' => 'name'
             ])
         ;
     }

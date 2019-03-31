@@ -16,8 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class QuestionsController extends AbstractController
 {
     /**
-     * @Route("activity/{id}/questions/new", name="activity_questions_new")
-     * @Route("activity/{id}/questions/{slug}/edit", name="activity_questions_edit")
+     * @Route("activity/{id}/questions/new", name="activity_QCM_new")
+     * @Route("activity/{id}/questions/{slug}/edit", name="activity_QCM_edit")
      */
     public function index($id, $slug = null, Request $request, ObjectManager $manager, ActivityRepository $activityRepository, QuestionsRepository $questionsRepository)
     {
@@ -44,10 +44,10 @@ class QuestionsController extends AbstractController
             $manager->flush();
 
             if(!$slug){
-                return $this->redirectToRoute('activity_questions_new', ['id' => $activities->getId()]);
+                return $this->redirectToRoute('activity_'. $activities->getType()->getName() .'_new', ['id' => $activities->getId()]);
             }else{
                 $this->addFlash('success', 'Questions modifiées avec succès');
-                return $this->redirectToRoute('activity_questions', ['id' => $activities->getId()]);
+                return $this->redirectToRoute('activity_'. $activities->getType()->getName() , ['id' => $activities->getId()]);
             }
 
 
@@ -71,6 +71,6 @@ class QuestionsController extends AbstractController
         $manager->flush();
 
 
-        return $this->redirectToRoute('activity_questions', ['id' => $id]);
+        return $this->redirectToRoute('activity_QCM', ['id' => $id]);
     }
 }

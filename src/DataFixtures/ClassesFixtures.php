@@ -11,7 +11,7 @@ class ClassesFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
 
-        for ($i = 1; $i <= 6; $i++){
+        /*for ($i = 1; $i <= 6; $i++){
 
             $classe = new Classes();
 
@@ -20,6 +20,6 @@ class ClassesFixtures extends Fixture
             $manager->persist($classe);
         }
 
-        $manager->flush();
+        $manager->flush();*/
     }
 }

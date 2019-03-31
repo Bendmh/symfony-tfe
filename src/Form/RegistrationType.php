@@ -25,6 +25,9 @@ class RegistrationType extends AbstractType
                 'choices' => [
                     'Professeur' => 'ROLE_PROFESSEUR',
                     'Elève' => 'ROLE_ELEVE'
+                ],
+                'attr' => [
+                    'class' => 'selectChange'
                 ]
             ])
             ->add('classes', EntityType::class, [
@@ -35,7 +38,9 @@ class RegistrationType extends AbstractType
                 'mapped' => true,
                 'by_reference' =>false,
                 'multiple' => true,
-                'attr' => ['id' => 'test']
+                'attr' => [
+                    'class' => 'selectClasses'
+                ]
             ])
         ;
     }

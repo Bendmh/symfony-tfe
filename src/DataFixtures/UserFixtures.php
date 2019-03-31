@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Classes;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -19,13 +20,39 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $user = new User();
+        $classe = new Classes();
+        $classe->setNom('2A');
+        $manager->persist($classe);
 
-        $user->setNom('');
-        $user->setPrenom('');
-        $user->setPseudo('');
+        $user = new User();
+        $user->setNom('deMahieu');
+        $user->setPrenom('Benoit');
+        $user->setPseudo('pajero');
         $user->setTitre('ROLE_SUPER_ADMIN');
-        $user->setPassword($this->encoder->encodePassword($user, ''));
+        $user->setPassword($this->encoder->encodePassword($user, 'testtest'));
+        $user->addClass($classe);
+
+        $manager->persist($user);
+
+        $user = new User();
+        $user->setNom('deMahieu');
+        $user->setPrenom('Marie');
+        $user->setPseudo('peps');
+        $user->setTitre('ROLE_PROFESSEUR');
+        $user->setPassword($this->encoder->encodePassword($user, 'testtest'));
+        $user->addClass($classe);
+
+        $manager->persist($user);
+
+        $user = new User();
+        $user->setNom('deMahieu');
+        $user->setPrenom('Pierre');
+        $user->setPseudo('lynx');
+        $user->setTitre('ROLE_ELEVE');
+        $user->setPassword($this->encoder->encodePassword($user, 'testtest'));
+        $user->addClass($classe);
+
+        $manager->persist($user);
 
         $manager->flush();
     }

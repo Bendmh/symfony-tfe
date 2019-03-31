@@ -33,6 +33,11 @@ class UserActivity
      */
     private $point;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $total;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -70,6 +75,18 @@ class UserActivity
     public function setPoint(string $point): self
     {
         $this->point = $point;
+
+        return $this;
+    }
+
+    public function getTotal(): ?string
+    {
+        return $this->total;
+    }
+
+    public function setTotal(string $total): self
+    {
+        $this->total = $total;
 
         return $this;
     }

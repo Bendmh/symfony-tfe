@@ -22,7 +22,7 @@ class ResultatController extends AbstractController
         $form->handleRequest($request);
         $user_activity = $userActivityRepository->findAllVisibleQuery($search);
         //$user_activity = $userActivityRepository->findAll();
-        //$user_activity = $userActivityRepository->myFind(17);
+        //$user_activity = $userActivityRepository->myFind(31);
 
         return $this->render('resultat/index.html.twig', [
             'user_activity' => $user_activity,
